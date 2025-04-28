@@ -1,6 +1,11 @@
 import unittest
 
-from text_splitter import split_nodes_delimiter, split_nodes_image, split_nodes_link
+from text_splitter import (
+    split_nodes_delimiter,
+    split_nodes_image,
+    split_nodes_link,
+    text_to_textnodes,
+)
 from textnode import TextNode, TextType
 
 
@@ -80,6 +85,34 @@ class TestSplitNodesDelimiter(unittest.TestCase):
             ],
             result,
         )
+
+    def test_text_to_textnodes(self):
+        text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        result = text_to_textnodes(text)
+        self.assertListEqual(
+            [
+                TextNode("This is ", TextType.NORMAL),
+                TextNode("text", TextType.BOLD),
+                TextNode(" with an ", TextType.NORMAL),
+                TextNode("italic", TextType.ITALIC),
+                TextNode(" word and a ", TextType.NORMAL),
+                TextNode("code block", TextType.CODE),
+                TextNode(" and an ", TextType.NORMAL),
+                TextNode(
+                    "obi wan image",
+                    TextType.IMAGE_LINK,
+                    "https://i.imgur.com/fJRm4Vk.jpeg",
+                ),
+                TextNode(" and a ", TextType.NORMAL),
+                TextNode("link", TextType.LINK, "https://boot.dev"),
+            ],
+            result,
+        )
+
+    def test_empty_text_to_textnodes(self):
+        text = ""
+        result = text_to_textnodes(text)
+        self.assertListEqual([], result)
 
 
 if __name__ == "__main__":
