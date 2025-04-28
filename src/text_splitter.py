@@ -40,3 +40,74 @@ def extract_markdown_images(text):
 
 def extract_markdown_links(text):
     return re.findall(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
+
+
+def split_nodes_link(old_nodes):
+    list_of_nodes = []
+
+    for node in old_nodes:
+        if node.text_type != TextType.NORMAL:
+            list_of_nodes.append(node)
+            continue
+
+        links = extract_markdown_links(node.text)
+
+        if not links:
+            list_of_nodes.append(node)
+            continue
+
+        current_text = node.text
+
+        for alt_text, url in links:
+            sections = current_text.split(f"[{alt_text}]({url})", 1)
+
+            # sections[0] is text before [alt_text] so this adds it if not empty
+            if sections[0]:
+                list_of_nodes.append(TextNode(sections[0], TextType.NORMAL))
+
+            list_of_nodes.append(TextNode(alt_text, TextType.LINK, url))
+
+            if len(sections) > 1:
+                current_text = sections[1]
+            else:
+                current_text = ""
+
+        if current_text:
+            list_of_nodes.append(TextNode(current_text, TextType.NORMAL))
+
+    return list_of_nodes
+
+
+def split_nodes_image(old_nodes):
+    list_of_nodes = []
+
+    for node in old_nodes:
+        if node.text_type != TextType.NORMAL:
+            list_of_nodes.append(node)
+            continue
+
+        links = extract_markdown_images(node.text)
+
+        if not links:
+            list_of_nodes.append(node)
+            continue
+
+        current_text = node.text
+
+        for alt_text, url in links:
+            sections = current_text.split(f"![{alt_text}]({url})", 1)
+
+            if sections[0]:
+                list_of_nodes.append(TextNode(sections[0], TextType.NORMAL))
+
+            list_of_nodes.append(TextNode(alt_text, TextType.IMAGE_LINK, url))
+
+            if len(sections) > 1:
+                current_text = sections[1]
+            else:
+                current_text = ""
+
+        if current_text:
+            list_of_nodes.append(TextNode(current_text, TextType.NORMAL))
+
+    return list_of_nodes

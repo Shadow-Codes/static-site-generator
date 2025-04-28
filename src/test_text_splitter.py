@@ -1,6 +1,6 @@
 import unittest
 
-from text_splitter import split_nodes_delimiter
+from text_splitter import split_nodes_delimiter, split_nodes_image, split_nodes_link
 from textnode import TextNode, TextType
 
 
@@ -38,6 +38,48 @@ class TestSplitNodesDelimiter(unittest.TestCase):
         self.assertEqual(result[0].text_type, TextType.NORMAL)
         self.assertEqual(result[1].text, "italic text")
         self.assertEqual(result[1].text_type, TextType.ITALIC)
+
+    def test_link_delimiter(self):
+        node = TextNode(
+            "boot.dev website [website](https://boot.dev) and boot.dev youtube [youtube](https://www.youtube.com/@bootdotdev)",
+            TextType.NORMAL,
+        )
+        result = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("boot.dev website ", TextType.NORMAL),
+                TextNode("website", TextType.LINK, "https://boot.dev"),
+                TextNode(" and boot.dev youtube ", TextType.NORMAL),
+                TextNode(
+                    "youtube",
+                    TextType.LINK,
+                    "https://www.youtube.com/@bootdotdev",
+                ),
+            ],
+            result,
+        )
+
+    def test_image_delimiter(self):
+        node = TextNode(
+            "First link ![image](https://i.imgur.com/zjjcJKZ.png) and second link ![second image](https://i.imgur.com/3elNhQu.png)",
+            TextType.NORMAL,
+        )
+        result = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("First link ", TextType.NORMAL),
+                TextNode(
+                    "image", TextType.IMAGE_LINK, "https://i.imgur.com/zjjcJKZ.png"
+                ),
+                TextNode(" and second link ", TextType.NORMAL),
+                TextNode(
+                    "second image",
+                    TextType.IMAGE_LINK,
+                    "https://i.imgur.com/3elNhQu.png",
+                ),
+            ],
+            result,
+        )
 
 
 if __name__ == "__main__":
