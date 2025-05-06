@@ -35,7 +35,7 @@ class TestParentNode(unittest.TestCase):
 
     def test_to_html_with_no_children(self):
         with self.assertRaises(ValueError) as context:
-            ParentNode("div", []).to_html()
+            ParentNode("div", None).to_html()
 
         self.assertEqual(str(context.exception), "children element(s) is missing")
 
