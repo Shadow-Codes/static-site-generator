@@ -1,6 +1,5 @@
 from enum import Enum
 
-from htmlnode import HTMLNode
 from parentnode import ParentNode
 from text_splitter import text_to_textnodes
 from textnode import TextNode, TextType, text_node_to_html_node
