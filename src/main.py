@@ -1,6 +1,7 @@
 import os
 import shutil
 
+from generator import generate_page
 from textnode import TextNode, TextType
 
 
@@ -25,6 +26,7 @@ def copy_static(source, destination):
 
 def main():
     copy_static("static", "public")
+    generate_page("content/index.md", "template.html", "public/index.html")
 
     dummy = TextNode("This is some anchor text", TextType.LINK, "https://www.boot.dev")
     print(dummy)
