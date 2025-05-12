@@ -1,5 +1,6 @@
 import os
 import shutil
+import sys
 
 from generator import generate_page, generate_pages_recursive
 from textnode import TextNode, TextType
@@ -25,8 +26,12 @@ def copy_static(source, destination):
 
 
 def main():
-    copy_static("static", "public")
-    generate_pages_recursive("content", "template.html", "public")
+    if len(sys.argv) < 2:
+        base_path = "/"
+    else:
+        base_path = sys.argv[1]
+    copy_static("static", "docs")
+    generate_pages_recursive(base_path, "content", "template.html", "docs")
 
     dummy = TextNode("This is some anchor text", TextType.LINK, "https://www.boot.dev")
     print(dummy)
