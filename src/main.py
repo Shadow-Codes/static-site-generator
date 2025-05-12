@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from generator import generate_page
+from generator import generate_page, generate_pages_recursive
 from textnode import TextNode, TextType
 
 
@@ -26,7 +26,7 @@ def copy_static(source, destination):
 
 def main():
     copy_static("static", "public")
-    generate_page("content/index.md", "template.html", "public/index.html")
+    generate_pages_recursive("content", "template.html", "public")
 
     dummy = TextNode("This is some anchor text", TextType.LINK, "https://www.boot.dev")
     print(dummy)
